@@ -2,7 +2,9 @@ import json
 import random
 
 while True:
-    z = input()
+    input_string = input()
+    input_dict = json.loads(input_string)
+    
     commands = ['left', 'right', 'stop']
     cmd = random.choice(commands)
     cmd = 'right'
