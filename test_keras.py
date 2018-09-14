@@ -24,8 +24,8 @@ from keras.models import Sequential
 from keras.layers import Dense
 import numpy as np
 import matplotlib.pyplot as plt
-import time
-from keras.utils import plot_model
+from keras.utils import np_utils
+from sklearn.preprocessing import LabelEncoder
 
 dataSet = np.array([[1., 0.08518521,0.45985378],
                     [1., 0.13851827, 0.9419858 ],
@@ -42,89 +42,93 @@ dataSet = np.array([[1., 0.08518521,0.45985378],
                     [1., 0.81538251, 0.89336511],
                     [1., 0.21282806, 0.08611013],
                     [1., 0.22962954, 0.19158838]])
-testSet = np.array([[1., 0.2, 0.4],
+testSet = np.array([[1., 0.2, 0.5],
                     [1., 0.6, 0.8],
                     [1., 0.1, 0.8],
                     [1., 0.8, 0.8],
                     [1., 0., 0.2],
-                    [1., 0.6, 1.]])
-answerSet_test = np.array([[1], [0], [1], [0], [1], [0]])
-
-answerSet = np.array([[1], [1], [1], [1], [0], [0], [0], [0], [1], [1], [0], [0], [0], [1], [1]])
+                    [1., 0.6, 1.],
+                    [1., 0.4, 0.2]])
+answerSet_test = np.array([[1], [0], [1], [0], [2], [0], [2]])
+answerSet = np.array([[1], [1], [2], [1], [0], [0], [0], [0], [2], [1], [0], [0], [0], [2], [2]])
 
 fig = plt.gcf()
-
-#ax = fig.add_subplot(111)
 fig.show()
 fig.canvas.draw()
 
-def realDraw(trainSet, answerSet):
-    #print(trainSet)
-    #print(answerSet)
-    #return
 
+def realDraw(trainSet, answerSet):
     temp = []
-    # print(self.answerSet_train)
     for r in answerSet:
         temp.append(r[0])
     temp = np.asarray(temp)
 
+    dataSet_2 = trainSet[1:].transpose()[temp[:] == 2]
     dataSet_1 = trainSet[1:].transpose()[temp[:] == 1]
     dataSet_0 = trainSet[1:].transpose()[temp[:] == 0]
+
+    dataSet_2 = dataSet_2.transpose()
     dataSet_1 = dataSet_1.transpose()
     dataSet_0 = dataSet_0.transpose()
     print(dataSet_1.shape)
 
     plt.plot(dataSet_0[0], dataSet_0[1], "ob")
     plt.plot(dataSet_1[0], dataSet_1[1], "xr")
-    y = []
-    x = []
-    time.sleep(0.9)
+    plt.plot(dataSet_2[0], dataSet_2[1], "xg")
+
     fig.canvas.draw()
-    #fig.canvas.flush_events()
-    #.draw()
+
+seed = 2
+np.random.seed(seed)
 
 
-
-
-
-
-
-np.random.seed(2)
+def format_answerSet(answerSet):
+    encoder = LabelEncoder()
+    encoder.fit(answerSet)
+    encoded_y = encoder.transform(answerSet)
+    dummy_y = np_utils.to_categorical(encoded_y)
+    print("encoded answerSet = ", dummy_y)
+    return dummy_y
 
 def train(trainSet, answerSet):
+
+    dummy_y = format_answerSet(answerSet)
+
     model = Sequential()
     set_size, num_of_params = trainSet.shape
-    model.add(Dense(num_of_params, input_dim=num_of_params, activation='linear'))
-    model.add(Dense(1, activation='sigmoid'))
-    model.compile(loss="binary_crossentropy", optimizer="adam", metrics=['accuracy'])
-    model.fit(trainSet, answerSet,epochs=1000,batch_size=1)
-
-    scores = model.evaluate(trainSet,answerSet)
-    print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1] * 100))
+    model.add(Dense(num_of_params, input_dim=num_of_params, activation='relu'))
+    model.add(Dense(3, activation='softmax'))
+    model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=['accuracy'])
+    model.fit(trainSet, dummy_y,epochs=500,batch_size=2)
     return model
 
-
-weights = list()
-
-
-def y_func(x, i):
-    return float(-(weights[i][0] + weights[i][1] * x) / weights[i][2])
 
 
 def main():
     realDraw(dataSet.transpose(), answerSet)
 
     model = train(dataSet, answerSet)
-    global weights
-    weights = model.layers[0].get_weights()[0]
     print("layer 0 : ", model.layers[0].get_weights()[0])
     print("layer 1 : ", model.layers[1].get_weights()[0])
-
-    print("type weights: ", type(weights))
-    print("weights: ", weights)
     print("model.weights: ", model.weights)
     print("model.output: ",model.output)
+    # plot_model(model,'model.png')   - это рисует схематичный график модели
+
+    dummy_y = format_answerSet(answerSet_test)
+
+    scores = model.evaluate(testSet, dummy_y)
+    print("checking accurance of the testSet:")
+    print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1] * 100))
+
+    print("\npredicting ... \n")
+    print(testSet)
+    print(model.predict(testSet))
+
+    pred = model.predict(np.array([[1., 0., 0.2]]))
+    print("should be [0 0 1]: " , pred)
+    print("type of the prediction: ", type(pred))
+    print("real answer: ", np.argmax(pred))
+    plt.show()
 
 #TODO: эта херь не работает, а точнее: я не знаю, какие параметры нужно брать, чтобы правильно отобразить то, что там получилось
     # поэтому рисуется какая-то чушь. дальше я проверил, насколько правильно работает модель, но с ней вроде все норм.
@@ -138,21 +142,8 @@ def main():
         print("x = ", x)
         print("y = ", y)
 
-        plt.plot(x, y)
-'''
-
-    #plot_model(model,'model.png')   - это рисует схематичный график модели
-    scores = model.evaluate(testSet, answerSet_test)
-    print("checking accurance of the testSet:")
-    print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
-    print("\npredicting ... \n")
-    print(testSet)
-    print(model.predict(testSet))
-
-    plt.show()
+        plt.plot(x, y)'''
 
 
 
 main()
-
-
