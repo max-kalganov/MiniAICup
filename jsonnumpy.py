@@ -19,19 +19,22 @@ def getparams_TypeTick(params):
 def getparams_NewMatch(data):
     l = []
     for item in sorted(data):
+        if item == 'proto_map':
+                l.append(data[item].get('squared_wheels', False))
+
         for seq in sorted(data[item]):
-            if seq == 'button_poly' or seq == 'car_body_poly':
-                for pos in data[item][seq]:
-                    l.append(pos)
-            elif seq == 'front_wheel_position' or seq == 'rear_wheel_position' or seq == 'rear_wheel_joint':
-                l.append(data[item][seq])
-            elif seq == 'rear_wheel_damp_position' or seq == 'front_wheel_damp_position':
-                l.append(data[item][seq])
-            elif seq == 'segments':
-                for pos in data[item][seq]:
-                        l.append(np.hstack(pos))
-            else:
-                l.append(data[item][seq])
+                if seq == 'button_poly' or seq == 'car_body_poly':
+                    for pos in data[item][seq]:
+                        l.append(pos)
+                elif seq == 'front_wheel_position' or seq == 'rear_wheel_position' or seq == 'rear_wheel_joint':
+                    l.append(data[item][seq])
+                elif seq == 'rear_wheel_damp_position' or seq == 'front_wheel_damp_position':
+                    l.append(data[item][seq])
+                elif seq == 'segments' or seq == 'squared_wheels':
+                    pass
+                else:
+                    l.append(data[item][seq])
+                print(seq, data[item][seq])
     return l
 
 
@@ -42,13 +45,14 @@ new_match_info = []
 '''
 Обрати внимание на отображение данных типа 'new_match'. Оно почему-то разные данные показывает
 '''
-
 for data in parsed_data['visio_info']:
     if data['type'] == 'tick':
             ticks.append(np.hstack(getparams_TypeTick(data['params'])))
     if data['type'] == 'new_match':
-            new_match_info.append(np.hstack(getparams_NewMatch(data['params'])))
-            print(data['params'])
+        new_match_info.append(np.hstack(getparams_NewMatch(data['params'])))
 
-for i in new_match_info:
-    print(i.shape)
+
+
+n = np.array(new_match_info)
+n = np.delete(n,29,1)
+print(n.shape)
