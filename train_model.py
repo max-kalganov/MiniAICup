@@ -5,23 +5,20 @@ from keras.utils import np_utils
 from sklearn.preprocessing import LabelEncoder
 from keras.models import load_model
 
-
+from jsonnumpy import parser
 
 np.random.seed(2)
 
-def reading_json(filename):
-    # TODO: напиши здесь плиз часть про чтение json файла
-    match_params = []
-    match_moves = []
-    return match_params, match_moves
-
 def makeTrainAndTestSets(match_params, match_moves):
+    match_params, match_moves = parser()
     # TODO: а здесь перевод их в numpy. формат такой : match_params_train, match_params_test - (количество тиков, количество параметров)
     # TODO: а формат match_moves_train, match_moves_test - столбец ходов.(не меняй названия движений на цифры. у меня эот есть)
-    match_params_train = []
-    match_params_test = []
-    match_moves_train = []
-    match_moves_test = []
+    train_set_size = int(0.7 * match_moves.shape[0])
+
+    match_params_train = match_params[:,:train_set_size]
+    match_params_test = match_params[:, train_set_size:]
+    match_moves_train = match_moves[:,:train_set_size]
+    match_moves_test = match_moves[:, train_set_size:]
     return match_params_train, match_params_test, match_moves_train, match_moves_test
 
 
@@ -60,8 +57,7 @@ def train(match_params, correct_decision):
 filename = "train.json"
 
 def main():
-    match_params, match_moves = reading_json(filename)
-    match_params_train, match_params_test, match_moves_train, match_moves_test = makeTrainAndTestSets(match_params, match_moves)
+    match_params_train, match_params_test, match_moves_train, match_moves_test = makeTrainAndTestSets()
 
     # TODO: нужно ещё нормализовать данные
     model = train(match_params_train, match_moves_train)
@@ -76,9 +72,7 @@ def main():
     del model
 
 def upload_model_and_fit_new_trainSet():
-    match_params, match_moves = reading_json(filename)
-    match_params_train, match_params_test, match_moves_train, match_moves_test = makeTrainAndTestSets(match_params,
-                                                                                                      match_moves)
+    match_params_train, match_params_test, match_moves_train, match_moves_test = makeTrainAndTestSets()
     # TODO: check the file you are loading....
     model = load_model('my_model.h5')
     dummy_y = format_answerSet(match_moves_test)
@@ -86,8 +80,8 @@ def upload_model_and_fit_new_trainSet():
     print("checking accurance of the testSet:")
     print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1] * 100))
 
-    dummy_y_fit = format_answerSet(match_moves)
-    model.fit(match_params, dummy_y_fit, epochs=1500, batch_size=2)
+    dummy_y_fit = format_answerSet(match_moves_train)
+    model.fit(match_params_train, dummy_y_fit, epochs=1500, batch_size=2)
 
     scores = model.evaluate(match_params_test, dummy_y)
     print("checking accurance of the testSet:")
@@ -98,3 +92,4 @@ def upload_model_and_fit_new_trainSet():
     if(ans == "Y" or ans == "y"):
         model.save('my_model_new.h5')
 
+main()

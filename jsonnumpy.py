@@ -1,8 +1,5 @@
 import json
 import numpy as np
-with open('visio','r') as f:
-    json_data = f.read()
-
 
 
 # [ ticknum,     , deadlineposition]
@@ -34,25 +31,28 @@ def getparams_NewMatch(data):
                     pass
                 else:
                     l.append(data[item][seq])
-                print(seq, data[item][seq])
     return l
 
 
 
-parsed_data = json.loads(json_data)
-ticks = []
-new_match_info = []
-'''
-Обрати внимание на отображение данных типа 'new_match'. Оно почему-то разные данные показывает
-'''
-for data in parsed_data['visio_info']:
-    if data['type'] == 'tick':
-            ticks.append(np.hstack(getparams_TypeTick(data['params'])))
-    if data['type'] == 'new_match':
-        new_match_info.append(np.hstack(getparams_NewMatch(data['params'])))
 
 
+def parser(filenameDump='visio', keyboardfilename='KeyboeardDEbug'):
+    ticks = []
+    with open(filenameDump, 'r') as f:
+        Dump_data = f.read()
+    with open(keyboardfilename, 'r') as f:
+        answer_data = np.asarray(list(map(int, f.read().split()))).reshape(-1, 1)
+    parsed_data = json.loads(Dump_data)
 
-n = np.array(new_match_info)
-n = np.delete(n,29,1)
-print(n.shape)
+    for data in parsed_data['visio_info']:
+        if data['type'] == 'tick':
+                ticks.append(np.concatenate((np.hstack(getparams_TypeTick(data['params'])), new_match_info)))
+        if data['type'] == 'new_match':
+            new_match_info = np.hstack(getparams_NewMatch(data['params']))
+    ticks = np.array(ticks).T
+
+    return ticks,answer_data
+
+
+print(parser()[1].shape)
