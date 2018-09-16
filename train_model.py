@@ -3,7 +3,7 @@ from keras.layers import Dense
 import numpy as np
 from keras.utils import np_utils
 from sklearn.preprocessing import LabelEncoder
-
+from keras.models import load_model
 
 
 
@@ -50,15 +50,16 @@ def train(match_params, correct_decision):
     model.add(Dense(num_of_params, activation='relu'))
     model.add(Dense(3, activation='softmax'))
     model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=['accuracy'])
-    model.fit(match_params, dummy_y, epochs=500, batch_size=2)
+    model.fit(match_params, dummy_y, epochs=1500, batch_size=2)
 
     scores = model.evaluate()
     print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1] * 100))
     return model
 
 
+filename = "train.json"
+
 def main():
-    filename = "train.json"
     match_params, match_moves = reading_json(filename)
     match_params_train, match_params_test, match_moves_train, match_moves_test = makeTrainAndTestSets(match_params, match_moves)
 
@@ -73,3 +74,27 @@ def main():
     #model.predict(...)
     model.save('my_model.h5')  # creates a HDF5 file 'my_model.h5'
     del model
+
+def upload_model_and_fit_new_trainSet():
+    match_params, match_moves = reading_json(filename)
+    match_params_train, match_params_test, match_moves_train, match_moves_test = makeTrainAndTestSets(match_params,
+                                                                                                      match_moves)
+    # TODO: check the file you are loading....
+    model = load_model('my_model.h5')
+    dummy_y = format_answerSet(match_moves_test)
+    scores = model.evaluate(match_params_test, dummy_y)
+    print("checking accurance of the testSet:")
+    print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1] * 100))
+
+    dummy_y_fit = format_answerSet(match_moves)
+    model.fit(match_params, dummy_y_fit, epochs=1500, batch_size=2)
+
+    scores = model.evaluate(match_params_test, dummy_y)
+    print("checking accurance of the testSet:")
+    print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1] * 100))
+
+    print("did you check the file name? is that file correct one? Y/N")
+    ans = input()
+    if(ans == "Y" or ans == "y"):
+        model.save('my_model_new.h5')
+

@@ -26,6 +26,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from keras.utils import np_utils
 from sklearn.preprocessing import LabelEncoder
+from keras.models import load_model
 
 dataSet = np.array([[1., 0.08518521,0.45985378],
                     [1., 0.13851827, 0.9419858 ],
@@ -33,15 +34,18 @@ dataSet = np.array([[1., 0.08518521,0.45985378],
                     [1., 0.0160247,  0.92335785],
                     [1., 0.74256369, 0.3699414 ],
                     [1., 0.54611513, 0.81464114],
-                    [1., 0.8134179,  0.59915756],
-                    [1., 0.76095869, 0.95217406],
-                    [1., 0.05084209, 0.3055774 ],
+                    [1., 0.8134179,  0.59915756]])
+
+
+dataSet_past_fit = np.array([[1., 0.76095869, 0.95217406],
+                    [1., 0.05084209, 0.3055774],
                     [1., 0.02228888, 0.62681387],
-                    [1., 0.51587439, 0.7808052 ],
+                    [1., 0.51587439, 0.7808052],
                     [1., 0.72270179, 0.48777485],
                     [1., 0.81538251, 0.89336511],
                     [1., 0.21282806, 0.08611013],
                     [1., 0.22962954, 0.19158838]])
+
 testSet = np.array([[1., 0.2, 0.5],
                     [1., 0.6, 0.8],
                     [1., 0.1, 0.8],
@@ -50,7 +54,8 @@ testSet = np.array([[1., 0.2, 0.5],
                     [1., 0.6, 1.],
                     [1., 0.4, 0.2]])
 answerSet_test = np.array([[1], [0], [1], [0], [2], [0], [2]])
-answerSet = np.array([[1], [1], [2], [1], [0], [0], [0], [0], [2], [1], [0], [0], [0], [2], [2]])
+answerSet = np.array([[1], [1], [2], [1], [0], [0], [0]])
+answerSet_past_fit = np.array([[0], [2], [1], [0], [0], [0], [2], [2]])
 
 fig = plt.gcf()
 fig.show()
@@ -128,9 +133,27 @@ def main():
     print("should be [0 0 1]: " , pred)
     print("type of the prediction: ", type(pred))
     print("real answer: ", np.argmax(pred))
+    model.save('my_model.h5')  # creates a HDF5 file 'my_model.h5'
+    del model
+
     plt.show()
 
-#TODO: эта херь не работает, а точнее: я не знаю, какие параметры нужно брать, чтобы правильно отобразить то, что там получилось
+
+def check_load():
+    model = load_model('my_model.h5')
+    dummy_y = format_answerSet(answerSet_test)
+    scores = model.evaluate(testSet, dummy_y)
+    print("checking accurance of the testSet:")
+    print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1] * 100))
+
+    dummy_y_fit = format_answerSet(answerSet_past_fit)
+    model.fit(dataSet_past_fit, dummy_y_fit, epochs=500, batch_size=2)
+
+    scores = model.evaluate(testSet, dummy_y)
+    print("checking accurance of the testSet:")
+    print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1] * 100))
+
+    #TODO: эта херь не работает, а точнее: я не знаю, какие параметры нужно брать, чтобы правильно отобразить то, что там получилось
     # поэтому рисуется какая-то чушь. дальше я проверил, насколько правильно работает модель, но с ней вроде все норм.
     # значения по крайней мере выдает правильные.
     '''for j in range (0,2):
@@ -145,5 +168,5 @@ def main():
         plt.plot(x, y)'''
 
 
-
-main()
+#main()
+check_load()
