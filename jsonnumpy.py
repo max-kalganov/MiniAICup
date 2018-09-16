@@ -54,5 +54,6 @@ def parser(filenameDump='visio', keyboardfilename='KeyboeardDEbug'):
 
     return ticks,answer_data
 
-
-print(parser()[1].shape)
+p = parser()
+print(p[0].shape)
+print(p[1].shape)
