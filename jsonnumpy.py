@@ -1,8 +1,9 @@
 import json
 import numpy as np
 
-
 # [ ticknum,     , deadlineposition]
+
+
 def getparams_TypeTick(params):
     l = []
     l.append(params['tick_num'])
@@ -34,10 +35,7 @@ def getparams_NewMatch(data):
     return l
 
 
-
-
-
-def parser(filenameDump='visio', keyboardfilename='KeyboeardDEbug'):
+def parser(filenameDump='visio', keyboardfilename='KeyboardDebug', logfilename='1.log'):
     ticks = []
     with open(filenameDump, 'r') as f:
         Dump_data = f.read()
@@ -50,9 +48,25 @@ def parser(filenameDump='visio', keyboardfilename='KeyboeardDEbug'):
                 ticks.append(np.concatenate((np.hstack(getparams_TypeTick(data['params'])), new_match_info)))
         if data['type'] == 'new_match':
             new_match_info = np.hstack(getparams_NewMatch(data['params']))
-    ticks = np.array(ticks).T
+    ticks = removeBadTicks(np.array(ticks).T, logfilename)
 
-    return ticks,answer_data
+    return ticks, answer_data
+
+
+def removeBadTicks(dump, name='1.log'):
+    with open(name, 'r') as f:
+        Log = f.read()
+    Log = json.loads(Log)
+    c = 0
+    l = []
+    for tick in Log:
+        if c != tick['tick']:
+            c = tick['tick']
+        l.append(c)
+        c += 1
+    print(dump[:, l])
+    return dump[:, l]
+
 
 p = parser()
 print(p[0].shape)
