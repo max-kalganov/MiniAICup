@@ -64,10 +64,12 @@ def removeBadTicks(dump, name='1.log'):
             c = tick['tick']
         l.append(c)
         c += 1
-    print(dump[:, l])
-    return dump[:, l]
+    # 1: - without first string (tick_num)
+    return dump[1:, l]
 
 
-p = parser()
-print(p[0].shape)
-print(p[1].shape)
+ticks, answer = parser()
+print(ticks.shape)
+print(answer.shape)
+# x = np.delete(ticks, 0, axis=0)
+
