@@ -9,7 +9,7 @@ from jsonnumpy import parser
 
 np.random.seed(2)
 
-def makeTrainAndTestSets(match_params, match_moves):
+def makeTrainAndTestSets():
     match_params, match_moves = parser()
     # TODO: а здесь перевод их в numpy. формат такой : match_params_train, match_params_test - (количество тиков, количество параметров)
     # TODO: а формат match_moves_train, match_moves_test - столбец ходов.(не меняй названия движений на цифры. у меня эот есть)
@@ -47,7 +47,7 @@ def train(match_params, correct_decision):
     model.add(Dense(num_of_params, activation='relu'))
     model.add(Dense(3, activation='softmax'))
     model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=['accuracy'])
-    model.fit(match_params, dummy_y, epochs=1500, batch_size=2)
+    model.fit(match_params, dummy_y, epochs=1500)
 
     scores = model.evaluate()
     print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1] * 100))
