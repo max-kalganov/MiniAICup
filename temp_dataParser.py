@@ -4,8 +4,7 @@ import numpy as np
 
 def matchInfo_parser(matchDump):
     matchInfo = []
-    proto_map = parse_one_dump(matchDump['proto_map'])
-    proto_map = np.delete(proto_map,-1)
+    proto_map = np.array([matchDump['proto_map']['external_id']])
     proto_map = np.reshape(proto_map,(proto_map.shape[0],1))
 
     proto_car = parse_one_dump(matchDump['proto_car'])
@@ -13,7 +12,6 @@ def matchInfo_parser(matchDump):
     proto_car = np.reshape(proto_car, (proto_car.shape[0], 1))
 
     matchInfo = np.concatenate((proto_map, proto_car))
-    print("matchInfo shape: ", matchInfo.shape)
     # matchInfo should be a numpy.array column, with shape = (num of params, 1)
     return matchInfo
 
@@ -23,22 +21,20 @@ def parse_one_dump(dump):
     dump_list = list(dump.items())
     for d in dump_list:
         if type(d[1])  == type([]):
-            info_list = info_list + appendList(d[1])
+            info_list.extend(appendList(d[1]))
         else:
             info_list.append(d[1])
     if dump_list[-1][0] != 'squared_wheels':
         info_list.append(False)
     info = np.array(info_list)
     info = np.reshape(info, (len(info_list), 1))
-    print("info shape = ", info.shape)
-    print("info = ",info)
     return info
 
 def appendList(list):
     res = []
     for i in list:
         if type(i) == type([]):
-            res += appendList(i)
+            res.extend(appendList(i))
         else:
             res.append(i)
     return res
@@ -48,10 +44,9 @@ def appendList(list):
 def parse_cars_for_train(dump_cars, order=0):
     carsInfo = parse_one_dump(dump_cars['1'])
     if order == 0:
-        carsInfo += parse_one_dump(dump_cars['2'])
+        carsInfo = np.concatenate((carsInfo, parse_one_dump(dump_cars['2'])))
     elif order == 1:
-        carsInfo = parse_one_dump(dump_cars['2']) + carsInfo
-    print(carsInfo)
+        carsInfo = np.concatenate((parse_one_dump(dump_cars['2']), carsInfo))
     return carsInfo
 
 
@@ -83,13 +78,12 @@ def ticksInfo_parser(tickDump, args='p'):
         tickInfo = parse_ticks_for_play(tickDump)
     elif args == 't':
         tickInfo = parse_ticks_for_train(tickDump)
-
     # tickInfo should be a numpy.array column, with shape = (num of params, 1)
     return tickInfo
 
 
 def mainInfo_parser(filenameDump='visio'):
-    resultSet = None
+    resultSet = []
 
     with open(filenameDump, 'r') as f:
         Dump_data = f.read()
@@ -101,7 +95,7 @@ def mainInfo_parser(filenameDump='visio'):
         elif data['type'] == 'tick':
             current_tick_info = ticksInfo_parser(data['params'],'t')
             new_result_column_of_data = np.concatenate((current_tick_info, current_match_info))
-            if resultSet == None:
+            if resultSet == []:
                 resultSet = new_result_column_of_data
                 continue
             resultSet = np.concatenate((resultSet, new_result_column_of_data), axis=1)
@@ -127,43 +121,26 @@ def ticks_parser(name):
 
 def removeBadTicks(dump, name='1.log'):
     good_ticks = ticks_parser(name)
+
     # 1: - without first string (tick_num)
-    resDump = dump
+    resDump = dump[1:, good_ticks]
     return resDump
 
 
 def getDataSet_and_AnswerSet():
     matchAndTickInfo = mainInfo_parser()
+    print("matchAndTickInfo shape before removing bad ticks = ", matchAndTickInfo.shape)
     movesInfo = moves_parser()
+    print("movesInfo shape = ", movesInfo.shape)
     matchAndTickInfo = removeBadTicks(matchAndTickInfo)
+    print("matchAndTickInfo shape after removing bad ticks = ", matchAndTickInfo.shape)
     return matchAndTickInfo, movesInfo
 
-#getDataSet_and_AnswerSet()
-z = input()
-a = json.loads(z)
-print(matchInfo_parser(a))
+getDataSet_and_AnswerSet()
+#z = input()
+#a = json.loads(z)
+#print(matchInfo_parser(a))
 ''' -----------------------------------------------------------------------------------'''
-
-
-def getparams_NewMatch(data):
-    l = []
-    for item in sorted(data):
-        if item == 'proto_map':
-                l.append(data[item].get('squared_wheels', False))
-
-        for seq in sorted(data[item]):
-                if seq == 'button_poly' or seq == 'car_body_poly':
-                    for pos in data[item][seq]:
-                        l.append(pos)
-                elif seq == 'front_wheel_position' or seq == 'rear_wheel_position' or seq == 'rear_wheel_joint':
-                    l.append(data[item][seq])
-                elif seq == 'rear_wheel_damp_position' or seq == 'front_wheel_damp_position':
-                    l.append(data[item][seq])
-                elif seq == 'segments' or seq == 'squared_wheels':
-                    pass
-                else:
-                    l.append(data[item][seq])
-    return l
 
 def temp_for_bad_position():
     good_ticks = []
