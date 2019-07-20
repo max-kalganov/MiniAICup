@@ -1,8 +1,8 @@
 from copy import copy
-from game_objects.territory import Territory
-from game_objects.bonuses import Saw
-from constants import UP, DOWN, LEFT, RIGHT, SPEED, WINDOW_HEIGHT, WINDOW_WIDTH, WIDTH
-from helpers import batch_draw, draw_square
+from local_runner.game_objects.territory import Territory
+from local_runner.game_objects.bonuses import Saw
+from local_runner.constants import UP, DOWN, LEFT, RIGHT, SPEED, WINDOW_HEIGHT, WINDOW_WIDTH, WIDTH
+from local_runner.helpers import batch_draw, draw_square
 
 
 class Player:

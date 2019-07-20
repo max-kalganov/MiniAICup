@@ -1,7 +1,7 @@
 import random
 
-from helpers import draw_square_with_image, get_random_coordinates, batch_draw
-from constants import WIDTH
+from local_runner.helpers import draw_square_with_image, get_random_coordinates, batch_draw
+from local_runner.constants import WIDTH
 
 
 class Bonus:

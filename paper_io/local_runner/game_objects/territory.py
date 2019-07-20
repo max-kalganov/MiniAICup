@@ -1,5 +1,5 @@
-from helpers import in_polygon, batch_draw_territory, get_neighboring, get_vert_and_horiz
-from constants import WIDTH, LEFT, RIGHT, UP, DOWN
+from local_runner.helpers import in_polygon, batch_draw_territory, get_neighboring, get_vert_and_horiz
+from local_runner.constants import WIDTH, LEFT, RIGHT, UP, DOWN
 import networkx as nx
 
 

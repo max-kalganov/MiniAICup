@@ -70,6 +70,7 @@ class KeyboardClient2(KeyboardClient):
 
 
 class SimplePythonClient(Client):
+    # TODO: move this client into strategy dir
     def __init__(self):
         self.command = None
         self.tick = 0
@@ -213,45 +214,6 @@ class TcpClient(Client):
 class FileClient(Client):
     def __init__(self, path_to_script, path_to_log=None):
         self.process = Popen(path_to_script, stdout=PIPE, stdin=PIPE)
-        self.last_message = None
-        if path_to_log is None:
-            base_dir = os.getcwd()
-            now = datetime.datetime.now().strftime('%Y_%m_%d-%H-%M-%S.log.gz')
-            self.path_to_log = os.path.join(base_dir, now)
-        else:
-            self.path_to_log = path_to_log
-
-    def send_message(self, t, d):
-        msg = {
-            'type': t,
-            'params': d
-        }
-        msg_bytes = '{}\n'.format(json.dumps(msg)).encode()
-
-        self.process.stdin.write(msg_bytes)
-        self.process.stdin.flush()
-
-    async def get_command(self):
-        try:
-            line = self.process.stdout.readline().decode('utf-8')
-            state = json.loads(line)
-            return state
-        except Exception as e:
-            return {'debug': str(e)}
-
-    def save_log_to_disk(self, log, _):
-        with gzip.open(self.path_to_log, 'w') as f:
-            f.write(json.dumps(log).encode())
-
-        return {
-            'filename': os.path.basename(self.path_to_log),
-            'is_private': True,
-            'location': self.path_to_log
-        }
-
-
-class CloseClient(Client):
-    def __init__(self, path_to_log=None):
         self.last_message = None
         if path_to_log is None:
             base_dir = os.getcwd()
