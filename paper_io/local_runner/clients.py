@@ -8,7 +8,7 @@ from subprocess import Popen, PIPE
 
 import pyglet
 from local_runner.constants import LEFT, RIGHT, UP, DOWN, MAX_EXECUTION_TIME, REQUEST_MAX_TIME
-from strategy.main_for_local_runner import _set_state, run_main
+from my_strategy.main_for_local_runner import _set_state, run_main
 
 
 class Client(object):

@@ -1,7 +1,7 @@
 import json
 from time import sleep
 
-from strategy.strategy import get_command
+from my_strategy.main_strategy import get_command
 
 STATE: bytes = None
 

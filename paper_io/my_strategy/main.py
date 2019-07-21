@@ -1,6 +1,6 @@
 import json
 
-from strategy.strategy import get_command
+from my_strategy.main_strategy import get_command
 
 while True:
     state = input()
