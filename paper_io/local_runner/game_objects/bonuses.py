@@ -53,7 +53,7 @@ class Bonus:
 
 class Nitro(Bonus):
     color = (255, 249, 221, 255)
-    image_path = 'sprites/flash.png'
+    image_path = 'local_runner/sprites/flash.png'
     name = 'Нитро'
     visio_name = 'n'
 
@@ -78,7 +78,7 @@ class Nitro(Bonus):
 
 class Slowdown(Bonus):
     color = (234, 249, 255, 255)
-    image_path = 'sprites/explorer.png'
+    image_path = 'local_runner/sprites/explorer.png'
     name = 'Замедление'
     visio_name = 's'
 
@@ -103,7 +103,7 @@ class Slowdown(Bonus):
 
 class Saw(Bonus):
     color = (226, 228, 226, 255)
-    image_path = 'sprites/saw.png'
+    image_path = 'local_runner/sprites/saw.png'
     name = 'Пила'
     visio_name = 'saw'
     lines = []

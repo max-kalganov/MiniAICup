@@ -5,7 +5,7 @@ import pyglet
 from pyglet.window import key
 
 from local_runner.helpers import TERRITORY_CACHE
-from local_runner.clients import KeyboardClient, SimplePythonClient, FileClient
+from local_runner.clients import KeyboardClient, SimplePythonClient, FileClient, StrategyClient
 from local_runner.constants import LR_CLIENTS_MAX_COUNT, MAX_TICK_COUNT
 from local_runner.game_objects.scene import Scene
 from local_runner.game_objects.game import LocalGame
@@ -33,6 +33,8 @@ for i in range(1, LR_CLIENTS_MAX_COUNT + 1):
             client = KeyboardClient(scene.window)
         elif arg == 'simple_bot':
             client = SimplePythonClient()
+        elif arg == 'strategy':
+            client = StrategyClient()
         else:
             client = FileClient(arg.split(), getattr(args, 'p{}l'.format(i)))
 

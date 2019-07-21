@@ -1,13 +1,8 @@
 import json
-import random
 
-
-def here():
-    print("here")
-
+from strategy.strategy import get_command
 
 while True:
-    z = input()
-    commands = ['left', 'right', 'up', 'down']
-    cmd = random.choice(commands)
-    print(json.dumps({"command": cmd, 'debug': str(z)}))
+    state = input()
+    cmd = get_command(state)
+    print(json.dumps({"command": cmd, 'debug': str(state)}))
