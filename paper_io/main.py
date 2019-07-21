@@ -1,8 +1,9 @@
 import json
 
-from my_strategy.main_strategy import get_command
+from my_strategy.main_strategy import MainStrategy
 
+ms = MainStrategy()
 while True:
     state = input()
-    cmd = get_command(state)
+    cmd = ms.get_command(state)
     print(json.dumps({"command": cmd, 'debug': str(state)}))

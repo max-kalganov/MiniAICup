@@ -8,7 +8,7 @@ from subprocess import Popen, PIPE
 
 import pyglet
 from local_runner.constants import LEFT, RIGHT, UP, DOWN, MAX_EXECUTION_TIME, REQUEST_MAX_TIME
-from my_strategy.main_strategy import get_command
+from my_strategy.main_strategy import MainStrategy
 
 
 class Client(object):
@@ -261,6 +261,7 @@ class StrategyClient(Client):
         else:
             self.path_to_log = path_to_log
         self.message = ""
+        self.ms = MainStrategy()
 
     def send_message(self, t, d):
         msg = {
@@ -269,9 +270,8 @@ class StrategyClient(Client):
         }
         self.message = '{}\n'.format(json.dumps(msg))
 
-    @staticmethod
-    def get_formatted_command(state: str) -> dict:
-        cmd = get_command(state)
+    def get_formatted_command(self, state: str) -> dict:
+        cmd = self.ms.get_command(state)
         return {"command": cmd, 'debug': str(state)}
 
     async def get_command(self):
