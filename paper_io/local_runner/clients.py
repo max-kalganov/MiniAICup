@@ -89,7 +89,6 @@ class SimplePythonClient(Client):
         self.next_dir += 1
         self.command = command
 
-    # TODO: add this border check to our strategy
     def get_next_point(self):
         x, y = self.position
 

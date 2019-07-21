@@ -137,6 +137,7 @@ class Game:
         })
         for player in self.players:
             player.send_message('end_game', {})
+        print("end game")
 
     def send_game_tick(self):
         self.game_log.append({
@@ -298,10 +299,11 @@ class Game:
 class LocalGame(Game):
     border_color = (144, 163, 174, 255)
 
-    def __init__(self, clients, scene, timeout):
+    def __init__(self, clients, scene, timeout, draw_window: bool = True):
         super().__init__(clients)
         self.scene = scene
         self.timeout = timeout
+        self.draw_window = draw_window
 
     def show_bonuses(self):
         for player in self.players:
@@ -351,6 +353,7 @@ class LocalGame(Game):
         self.scene.reset_leaderboard()
 
     async def game_loop(self, *args, **kwargs):
-        self.scene.clear()
-        self.draw()
+        if self.draw_window:
+            self.scene.clear()
+            self.draw()
         return await super().game_loop(*args, **kwargs)

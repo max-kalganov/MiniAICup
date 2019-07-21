@@ -19,6 +19,8 @@ class MainStrategy:
             new_cur_index = len(self.steps) - 1
         return new_cur_index
 
+    # TODO: add border check to the strategy
+    # TODO: check start direction. If it is down - change cur_index in init
     def calc_new_step(self):
         if self.cur_step == self.num_of_steps:
             self.cur_step = 0

@@ -68,9 +68,12 @@ class Runner:
 
     @staticmethod
     def run_game():
-        Runner.game = LocalGame(clients, scene, args.timeout == 'on')
+        # draw_window = True, schedule_interval(Runner.game_loop_wrapper, 0.01) - for visualizing
+        # draw_window = False, schedule_interval(Runner.game_loop_wrapper, 0.0000000001) - for not visualizing
+
+        Runner.game = LocalGame(clients, scene, args.timeout == 'on', draw_window=True)
         Runner.game.send_game_start()
-        pyglet.clock.schedule_interval(Runner.game_loop_wrapper, 1 / 80)
+        pyglet.clock.schedule_interval(Runner.game_loop_wrapper, 0.01)
 
 
 Runner.run_game()
