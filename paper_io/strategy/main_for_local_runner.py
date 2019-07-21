@@ -24,3 +24,12 @@ def run_main():
         state = get_state()
         cmd = get_command(state)
         yield json.dumps({"command": cmd, 'debug': str(state)})
+
+
+if __name__ == '__main__':
+    _set_state("some state".encode('utf-8'))
+    print(run_main())
+    _set_state("some state".encode('utf-8'))
+    print(run_main())
+    _set_state("some state".encode('utf-8'))
+    print(run_main())
