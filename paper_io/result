@@ -1,1 +1,1 @@
-{"scores": {"filename": "scores.json", "location": "./scores.json", "is_private": false}, "debug": [null, {"filename": "2019_07_21-13-36-15.log.gz", "is_private": true, "location": "/home/max/main/projects/MiniAICup/paper_io/2019_07_21-13-36-15.log.gz"}], "visio": {"filename": "visio.gz", "location": "./visio.gz", "is_private": false}}
+{"scores": {"filename": "scores.json", "location": "./scores.json", "is_private": false}, "debug": [null], "visio": {"filename": "visio.gz", "location": "./visio.gz", "is_private": false}}
