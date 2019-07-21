@@ -71,7 +71,6 @@ class KeyboardClient2(KeyboardClient):
 
 
 class SimplePythonClient(Client):
-    # TODO: move this client into strategy dir
     def __init__(self):
         self.command = None
         self.tick = 0
@@ -90,6 +89,7 @@ class SimplePythonClient(Client):
         self.next_dir += 1
         self.command = command
 
+    # TODO: add this border check to our strategy
     def get_next_point(self):
         x, y = self.position
 
