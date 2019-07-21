@@ -8,7 +8,7 @@ from subprocess import Popen, PIPE
 
 import pyglet
 from local_runner.constants import LEFT, RIGHT, UP, DOWN, MAX_EXECUTION_TIME, REQUEST_MAX_TIME
-from my_strategy.main_for_local_runner import _set_state, run_main
+from my_strategy.main_strategy import get_command
 
 
 class Client(object):
@@ -260,19 +260,23 @@ class StrategyClient(Client):
             self.path_to_log = os.path.join(base_dir, now)
         else:
             self.path_to_log = path_to_log
+        self.message = ""
 
     def send_message(self, t, d):
         msg = {
             'type': t,
             'params': d
         }
-        msg_bytes = '{}\n'.format(json.dumps(msg)).encode()
-        _set_state(msg_bytes)
+        self.message = '{}\n'.format(json.dumps(msg))
+
+    @staticmethod
+    def get_formatted_command(state: str) -> dict:
+        cmd = get_command(state)
+        return {"command": cmd, 'debug': str(state)}
 
     async def get_command(self):
         try:
-            line = run_main()
-            state = json.loads(line)
+            state = self.get_formatted_command(self.message)
             return state
         except Exception as e:
             return {'debug': str(e)}
