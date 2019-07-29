@@ -268,9 +268,11 @@ class StrategyClient(Client):
             'params': d
         }
         self.message = '{}\n'.format(json.dumps(msg))
+        if t in {"end_game", "start_game"}:
+            self.ms.setup_stats(msg)
 
     def get_formatted_command(self, state: str) -> dict:
-        cmd = self.ms.get_command(state)
+        cmd = self.ms.get_command(json.loads(state) if state else {})
         return {"command": cmd, 'debug': str(state)}
 
     async def get_command(self):

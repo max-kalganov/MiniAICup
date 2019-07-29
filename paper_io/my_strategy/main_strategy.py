@@ -1,11 +1,19 @@
+from typing import Union
+
+from my_strategy.constants import UP, RIGHT, LEFT, DOWN, TYPE
+
+
 class MainStrategy:
     def __init__(self):
-        self.steps = ['up', 'right', 'down', 'left']
+        self.steps = [UP, RIGHT, DOWN, LEFT]
         self.cur_index = 0
         self.cur_step = -1
         self.num_of_steps = 0
         self.circle_start = self.steps[self.cur_index - 1]
         self.circle_num = 0
+
+    def setup_stats(self, settings: dict):
+        print(settings, settings[TYPE])
 
     def get_next_index(self):
         new_cur_index = self.cur_index + 1
@@ -19,8 +27,6 @@ class MainStrategy:
             new_cur_index = len(self.steps) - 1
         return new_cur_index
 
-    # TODO: add border check to the strategy
-    # TODO: check start direction. If it is down - change cur_index in init
     def calc_new_step(self):
         if self.cur_step == self.num_of_steps:
             self.cur_step = 0
@@ -35,6 +41,7 @@ class MainStrategy:
         else:
             self.cur_step += 1
 
-    def get_command(self, state):
+    def get_command(self, state: dict) -> Union[UP, DOWN, LEFT, RIGHT]:
+        print(state)
         self.calc_new_step()
         return self.steps[self.cur_index]
