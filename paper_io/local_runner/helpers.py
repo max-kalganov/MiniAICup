@@ -1,7 +1,7 @@
 import os
 import random
 import pyglet
-from constants import WIDTH, X_CELLS_COUNT, Y_CELLS_COUNT
+from local_runner.constants import WIDTH, X_CELLS_COUNT, Y_CELLS_COUNT
 
 
 def show_coordinates(point):
