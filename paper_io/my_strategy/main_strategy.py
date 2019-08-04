@@ -47,6 +47,6 @@ class MainStrategy:
             self.cur_step += 1
 
     def get_command(self, state: dict) -> Union[UP, DOWN, LEFT, RIGHT]:
-        self.ticks = pd.concat([self.ticks, pd.DataFrame(state['params'])])
+        # self.ticks = pd.concat([self.ticks, pd.DataFrame(state['params'])])
         self.calc_new_step()
         return self.steps[self.cur_index]
