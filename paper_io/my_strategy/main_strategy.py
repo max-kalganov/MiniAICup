@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, List
 import pandas as pd
 import numpy as np
 
@@ -26,21 +26,42 @@ class MainStrategy:
             else:
                 marker = int(player_index)
 
-            cells_territory = (np.array(player_state[TERRITORY]) - 15)//30
-            self.map[cells_territory[:, 0], cells_territory[:, 1]] = marker
+            cells_territory = self.get_cell(np.array(player_state[TERRITORY]))
+            self.set_markers(coords=cells_territory,
+                             marker=marker)
 
-            cells_lines = (np.array(player_state[LINES])-15)//30
-            self.map[cells_lines[:, 0], cells_lines[:, 1]] = marker + LINES_MARKER_ADDITION
+            cells_lines = self.get_cell(np.array(player_state[LINES]))
+            self.set_markers(coords=cells_lines,
+                             marker=marker + LINES_MARKER_ADDITION)
 
-            self.map[(player_state[POSITION][0]-15)//30,
-                     (player_state[POSITION][0]-15)//30] = marker + HEAD_MARKER_ADDITION
+            head_pos = self.get_cell(np.array(player_state[POSITION]))
+            self.set_markers(coords=head_pos,
+                             marker=marker + HEAD_MARKER_ADDITION)
 
-        cells_bonuses = (np.array([bonus[POSITION] for bonus in state_params[BONUSES]]))-15//30
-        self.map[cells_bonuses[:, 0], cells_bonuses[:, 1]] = BONUS_MARKER
+        cells_bonuses = self.get_cell(np.array([bonus[POSITION] for bonus in state_params[BONUSES]]))
+        self.set_markers(coords=cells_bonuses,
+                         marker=BONUS_MARKER)
 
     def init_map(self, settings):
         self.map = np.zeros([settings[PARAMS][X_CELLS_COUNT],
                              settings[PARAMS][Y_CELLS_COUNT]])
+
+    def set_markers(self,
+                    coords: np.ndarray,
+                    marker: float) -> bool:
+        assert isinstance(coords, np.ndarray), f"wrong type of coords"
+
+        if coords.size == 0:
+            return False
+
+        if coords.size == 2:
+            self.map[coords[0], coords[1]] = marker
+        else:
+            self.map[coords[:, 0], coords[:, 1]] = marker
+        return True
+
+    def get_cell(self, coord_with_width):
+        return (coord_with_width - 15) // 30
 
     def calc_step(self) -> Union[UP, LEFT, RIGHT, DOWN]:
         return UP
@@ -49,7 +70,11 @@ class MainStrategy:
     def get_command(self, state: dict) -> Union[UP, DOWN, LEFT, RIGHT]:
         # self.ticks = pd.concat([self.ticks, pd.DataFrame(state['params'])])
         self.update_map(state[PARAMS])
-        print('tick = ', state['params']['tick_num'], '\n', self.map)
+        print(f"tick = {state['params']['tick_num']}\n ")
+        for i in range(self.map.shape[0]):
+            for j in range(self.map.shape[1]):
+                print(int(10*self.map[i, j]), end=" ")
+            print("")
         return self.calc_step()
 
 
