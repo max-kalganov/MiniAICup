@@ -5,12 +5,12 @@ import copy
 import gzip
 import random
 
-from helpers import is_intersect
-from constants import WIDTH, WINDOW_HEIGHT, WINDOW_WIDTH, PLAYER_COLORS, MAX_TICK_COUNT, BONUS_CHANCE, \
+from local_runner.helpers import is_intersect
+from local_runner.constants import WIDTH, WINDOW_HEIGHT, WINDOW_WIDTH, PLAYER_COLORS, MAX_TICK_COUNT, BONUS_CHANCE, \
     BONUSES_MAX_COUNT, X_CELLS_COUNT, Y_CELLS_COUNT, SPEED, NEUTRAL_TERRITORY_SCORE, ENEMY_TERRITORY_SCORE, \
     LINE_KILL_SCORE, SAW_KILL_SCORE, AVAILABLE_BONUSES, SAW_SCORE
-from game_objects.player import Player
-from game_objects.bonuses import Nitro, Slowdown, Bonus, Saw
+from local_runner.game_objects.player import Player
+from local_runner.game_objects.bonuses import Nitro, Slowdown, Bonus, Saw
 
 
 class Game:
@@ -160,6 +160,7 @@ class Game:
         })
         for player in self.players:
             player.send_message('end_game', {})
+        print("end game")
 
     def append_tick_to_game_log(self):
         self.game_log.append({

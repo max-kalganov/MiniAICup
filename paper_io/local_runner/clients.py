@@ -7,7 +7,8 @@ import random
 from subprocess import Popen, PIPE
 
 import pyglet
-from constants import LEFT, RIGHT, UP, DOWN, MAX_EXECUTION_TIME, REQUEST_MAX_TIME
+from local_runner.constants import LEFT, RIGHT, UP, DOWN, MAX_EXECUTION_TIME, REQUEST_MAX_TIME
+from my_strategy.main_strategy import MainStrategy
 
 
 class Client(object):
@@ -217,7 +218,7 @@ class FileClient(Client):
         self.last_message = None
         if path_to_log is None:
             base_dir = os.getcwd()
-            now = datetime.datetime.now().strftime('%Y_%m_%d-%H-%M-%S.log.gz')
+            now = datetime.datetime.now().strftime('logs/%Y_%m_%d-%H-%M-%S.log.gz')
             self.path_to_log = os.path.join(base_dir, now)
         else:
             self.path_to_log = path_to_log
@@ -236,6 +237,48 @@ class FileClient(Client):
         try:
             line = self.process.stdout.readline().decode('utf-8')
             state = json.loads(line)
+            return state
+        except Exception as e:
+            return {'debug': str(e)}
+
+    def save_log_to_disk(self, log, _):
+        with gzip.open(self.path_to_log, 'w') as f:
+            f.write(json.dumps(log).encode())
+
+        return {
+            'filename': os.path.basename(self.path_to_log),
+            'is_private': True,
+            'location': self.path_to_log
+        }
+
+
+class StrategyClient(Client):
+    def __init__(self, path_to_log=None):
+        if path_to_log is None:
+            base_dir = os.getcwd()
+            now = datetime.datetime.now().strftime('local_runner/logs/%Y_%m_%d-%H-%M-%S.log.gz')
+            self.path_to_log = os.path.join(base_dir, now)
+        else:
+            self.path_to_log = path_to_log
+        self.message = ""
+        self.ms = MainStrategy()
+
+    def send_message(self, t, d):
+        msg = {
+            'type': t,
+            'params': d
+        }
+        self.message = '{}\n'.format(json.dumps(msg))
+        if t in {"end_game", "start_game"}:
+            self.ms.setup_stats(msg)
+
+    def get_formatted_command(self, state: str) -> dict:
+        cmd = self.ms.get_command(json.loads(state) if state else {})
+        return {"command": cmd, 'debug': str(state)}
+
+    async def get_command(self):
+        try:
+            state = self.get_formatted_command(self.message)
             return state
         except Exception as e:
             return {'debug': str(e)}

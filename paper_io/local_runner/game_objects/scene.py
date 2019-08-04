@@ -1,7 +1,7 @@
 import pyglet
 
-from constants import WINDOW_HEIGHT, WINDOW_WIDTH, WIDTH
-from helpers import draw_quadrilateral, draw_line
+from local_runner.constants import WINDOW_HEIGHT, WINDOW_WIDTH, WIDTH
+from local_runner.helpers import draw_quadrilateral, draw_line
 
 
 class Grid:

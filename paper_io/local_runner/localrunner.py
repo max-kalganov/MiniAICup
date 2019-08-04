@@ -8,11 +8,11 @@ import sys
 
 import pyglet
 
-from helpers import TERRITORY_CACHE, load_image
-from clients import Client, KeyboardClient, SimplePythonClient, FileClient
-from constants import LR_CLIENTS_MAX_COUNT, MAX_TICK_COUNT, WINDOW_WIDTH, WINDOW_HEIGHT, WIDTH
-from game_objects.game import LocalGame, Game
-from game_objects.bonuses import Bonus
+from local_runner.helpers import TERRITORY_CACHE, load_image
+from local_runner.clients import Client, KeyboardClient, SimplePythonClient, FileClient
+from local_runner.constants import LR_CLIENTS_MAX_COUNT, MAX_TICK_COUNT, WINDOW_WIDTH, WINDOW_HEIGHT, WIDTH
+from local_runner.game_objects.game import LocalGame, Game
+from local_runner.game_objects.bonuses import Bonus
 
 
 loop = events.new_event_loop()
@@ -148,6 +148,8 @@ else:
                 client = KeyboardClient(scene.window)
             elif arg == 'simple_bot':
                 client = SimplePythonClient()
+            elif arg == 'strategy':
+                client = StrategyClient()
             else:
                 client = FileClient(arg.split(), getattr(args, 'p{}l'.format(i)))
 
