@@ -284,8 +284,8 @@ class StrategyClient(Client):
             return {'debug': str(e)}
 
     def save_log_to_disk(self, log, _):
-        with gzip.open(self.path_to_log, 'w') as f:
-            f.write(json.dumps(log).encode())
+        #with gzip.open(self.path_to_log, 'w') as f:
+        #    f.write(json.dumps(log).encode())
 
         return {
             'filename': os.path.basename(self.path_to_log),
