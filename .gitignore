@@ -4,3 +4,4 @@ paper_io/*.zip
 **/*.pyc
 **/*.gz
 **/__pycache__/
+paper_io/local_runner/__pycache__/clients.cpython-37.pyc
