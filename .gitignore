@@ -1,6 +1,5 @@
 .idea/*
-paper_io/.idea
-paper_io/*.zip
+paper_io/.idea/
+paper_io/**/*.zip
 **/*.pyc
 **/*.gz
-**/__pycache__/
