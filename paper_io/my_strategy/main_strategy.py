@@ -1,4 +1,5 @@
 from typing import Union
+import pandas as pd
 
 from my_strategy.constants import UP, RIGHT, LEFT, DOWN, TYPE
 
@@ -12,8 +13,12 @@ class MainStrategy:
         self.circle_start = self.steps[self.cur_index - 1]
         self.circle_num = 0
 
+        self.first_stats = None
+        self.ticks = pd.DataFrame()
+
     def setup_stats(self, settings: dict):
         print(settings, settings[TYPE])
+        self.first_stats = pd.DataFrame(settings)
 
     def get_next_index(self):
         new_cur_index = self.cur_index + 1
@@ -42,6 +47,8 @@ class MainStrategy:
             self.cur_step += 1
 
     def get_command(self, state: dict) -> Union[UP, DOWN, LEFT, RIGHT]:
-        print(state)
+        if state['params']['tick_num'] > 20:
+            print("here")
+        self.ticks = pd.concat([self.ticks, pd.DataFrame(state['params'])])
         self.calc_new_step()
         return self.steps[self.cur_index]
