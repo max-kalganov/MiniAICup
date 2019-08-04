@@ -17,6 +17,6 @@ def get_res(cur_state: Dict) -> Union[None, str]:
 ms = MainStrategy()
 while True:
     state = input()
-    cmd = ms.get_command(json.loads(state))
+    cmd = get_res(json.loads(state))
     if cmd:
         print(json.dumps({"command": cmd, 'debug': str(state)}))

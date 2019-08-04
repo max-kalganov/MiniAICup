@@ -1,10 +1,57 @@
 from typing import Union
 import pandas as pd
+import numpy as np
 
-from my_strategy.constants import UP, RIGHT, LEFT, DOWN, TYPE
+from local_runner.constants import WIDTH
+from my_strategy.constants import UP, RIGHT, LEFT, DOWN, TYPE, TYPE_START_GAME, PARAMS, X_CELLS_COUNT, Y_CELLS_COUNT, \
+    SPEED, PLAYERS, TERRITORY, LINES, POSITION, LINES_MARKER_ADDITION, HEAD_MARKER_ADDITION, BONUSES, BONUS_MARKER
 
 
 class MainStrategy:
+    def __init__(self):
+        self.map = None
+        self.speed = None
+        self.width = None
+
+    def setup_stats(self, settings: dict):
+        self.first_stats = pd.DataFrame(settings)
+        if settings[TYPE] == TYPE_START_GAME:
+            self.init_map(settings)
+            self.speed = settings[PARAMS][SPEED]
+            self.width = settings[PARAMS][WIDTH]
+
+    def update_map(self, state_params):
+        for player_index, player_state in state_params[PLAYERS].items():
+            if player_index == 'i':
+                marker = -1
+            else:
+                marker = int(player_index)
+
+            cells_territory = np.array(player_state[TERRITORY])
+            self.map[cells_territory[:, 0], cells_territory[:, 1]] = marker
+
+            cells_lines = np.array(player_state[LINES])
+            self.map[cells_lines[:, 0], cells_lines[:, 1]] = marker + LINES_MARKER_ADDITION
+
+            self.map[player_state[POSITION][0], player_state[POSITION][0]] = marker + HEAD_MARKER_ADDITION
+
+        cells_bonuses = np.array([bonus[POSITION] for bonus in state_params[BONUSES]])
+        self.map[cells_bonuses[:, 0], cells_bonuses[:, 1]] = BONUS_MARKER
+
+    def init_map(self, settings):
+        self.map = np.zeros([settings[PARAMS][X_CELLS_COUNT],
+                             settings[PARAMS][Y_CELLS_COUNT]])
+
+    def calc_step(self) -> Union[UP, LEFT, RIGHT, DOWN]:
+        return UP
+
+    def get_command(self, state: dict) -> Union[UP, DOWN, LEFT, RIGHT]:
+        # self.ticks = pd.concat([self.ticks, pd.DataFrame(state['params'])])
+        self.update_map(state[PARAMS])
+        return self.calc_step()
+
+
+class SimpleBot:
     def __init__(self):
         self.steps = [UP, RIGHT, DOWN, LEFT]
         self.cur_index = 0
@@ -15,10 +62,16 @@ class MainStrategy:
 
         self.first_stats = None
         self.ticks = pd.DataFrame()
+        self.map = None
+        self.speed = None
+        self.width = None
 
     def setup_stats(self, settings: dict):
-        print(settings, settings[TYPE])
         self.first_stats = pd.DataFrame(settings)
+        if settings[TYPE] == TYPE_START_GAME:
+            self.init_map(settings)
+            self.speed = settings[PARAMS][SPEED]
+            self.width = settings[PARAMS][WIDTH]
 
     def get_next_index(self):
         new_cur_index = self.cur_index + 1
@@ -46,7 +99,15 @@ class MainStrategy:
         else:
             self.cur_step += 1
 
+    def update_map(self, state):
+        pass
+
+    def init_map(self, settings):
+        self.map = np.zeros([settings[PARAMS][X_CELLS_COUNT],
+                             settings[PARAMS][Y_CELLS_COUNT]])
+
     def get_command(self, state: dict) -> Union[UP, DOWN, LEFT, RIGHT]:
         # self.ticks = pd.concat([self.ticks, pd.DataFrame(state['params'])])
+
         self.calc_new_step()
         return self.steps[self.cur_index]
