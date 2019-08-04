@@ -9,7 +9,7 @@ import sys
 import pyglet
 
 from local_runner.helpers import TERRITORY_CACHE, load_image
-from local_runner.clients import Client, KeyboardClient, SimplePythonClient, FileClient
+from local_runner.clients import Client, KeyboardClient, SimplePythonClient, FileClient, StrategyClient
 from local_runner.constants import LR_CLIENTS_MAX_COUNT, MAX_TICK_COUNT, WINDOW_WIDTH, WINDOW_HEIGHT, WIDTH
 from local_runner.game_objects.game import LocalGame, Game
 from local_runner.game_objects.bonuses import Bonus
@@ -36,11 +36,11 @@ args = parser.parse_args()
 if not args.no_gui:
     from pyglet.gl import *
     from pyglet.window import key
-    from game_objects.scene import Scene
+    from local_runner.game_objects.scene import Scene
     scene = Scene(args.scale)
 
 if args.rewind_viewer:
-    from RewindClient import RewindClient
+    from local_runner.RewindClient import RewindClient
     rewind_client = RewindClient()
 
     org_append_tick_to_game_log = Game.append_tick_to_game_log
