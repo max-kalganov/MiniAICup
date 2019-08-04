@@ -1,3 +1,4 @@
 .idea/*
 paper_io/.idea
 paper_io/*.zip
+*.pyc
